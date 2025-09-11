@@ -1,0 +1,12 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Teal speech bubble/conversation icon -->
+  <path d="M16 4 C20 4 24 8 24 12 L24 20 C24 24 20 28 16 28 C12 28 8 24 8 20 L8 12 C8 8 12 4 16 4 Z" fill="#14B8A6"/>
+  
+  <!-- Speech bubble tail -->
+  <path d="M16 28 L12 32 L16 30 L20 32 Z" fill="#14B8A6"/>
+  
+  <!-- Three vertical bars (bar chart) inside the speech bubble -->
+  <rect x="12" y="16" width="2" height="6" fill="white"/>
+  <rect x="15" y="14" width="2" height="8" fill="white"/>
+  <rect x="18" y="18" width="2" height="4" fill="white"/>
+</svg>
