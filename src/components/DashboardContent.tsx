@@ -5,16 +5,20 @@ import ActivityHeatmap from './ActivityHeatmap';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import Achievements from './Achievements';
 import ShareButton from './ShareButton';
-import { UserProfile } from '../utils/mockData';
+import { UserProfile, AnnualGoal } from '../utils/mockData';
+
 interface DashboardContentProps {
   profile: UserProfile;
+  onGoalClick: (goal: AnnualGoal) => void;
 }
+
 const DashboardContent: React.FC<DashboardContentProps> = ({
-  profile
+  profile,
+  onGoalClick
 }) => {
   return <>
       <ProfileHeader profile={profile} />
-      <GoalContribution goals={profile.annualGoals} />
+      <GoalContribution goals={profile.annualGoals} onGoalClick={onGoalClick} />
       <ActivityHeatmap activityData={profile.activityData} />
       <AnalyticsDashboard queryTypes={profile.queryTypes} categoryExpertise={profile.categoryExpertise} usagePatterns={profile.usagePatterns} />
       <Achievements achievements={profile.achievements} />

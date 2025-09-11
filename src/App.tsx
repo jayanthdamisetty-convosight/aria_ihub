@@ -1,27 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TabSystem from './components/TabSystem';
 import DashboardContent from './components/DashboardContent';
-import PersonalMemoryFingerprint from './components/PersonalMemoryFingerprint';
-import EmailPreview from './components/EmailPreview';
 import LeaderboardTab from './components/LeaderboardTab';
-import MondayBriefEmail from './components/MondayBriefEmail';
-import { mockUserProfile, mockLeaderboardData } from './utils/mockData';
+import GoalInsightsLibrary from './components/GoalInsightsLibrary';
+import { mockUserProfile, mockLeaderboardData, getGoalInsights, AnnualGoal } from './utils/mockData';
+
 export function App() {
-  return <div className="min-h-screen w-full bg-[#FAFAFA] font-sans text-gray-900">
+  const [selectedGoal, setSelectedGoal] = useState<AnnualGoal | null>(null);
+
+  const handleGoalClick = (goal: AnnualGoal) => {
+    setSelectedGoal(goal);
+  };
+
+  const handleBackToProfile = () => {
+    setSelectedGoal(null);
+  };
+
+  // If a goal is selected, show the insights library
+  if (selectedGoal) {
+    const insights = getGoalInsights(selectedGoal.id);
+    return (
+      <GoalInsightsLibrary
+        goal={selectedGoal}
+        insights={insights}
+        onBack={handleBackToProfile}
+      />
+    );
+  }
+
+  return (
+    <div className="min-h-screen w-full bg-[#FAFAFA] font-sans text-gray-900">
       <main className="max-w-5xl mx-auto px-6 py-12">
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-light tracking-tight text-gray-900 mb-3">
-            ARIA Analytics Profile
+            ARIA's   i-hub
           </h1>
           <p className="text-gray-500 font-light">
             Track your social media intelligence journey
           </p>
         </div>
-        <TabSystem tabNames={["Sarah's 9 AM Email", 'What does Sarah do?', 'What does Sarah like?', "How Sarah's emails look", 'Leaderboard']}>
-          <MondayBriefEmail />
-          <DashboardContent profile={mockUserProfile} />
-          <PersonalMemoryFingerprint totalInsights={mockUserProfile.stats.totalInsights} />
-          <EmailPreview profile={mockUserProfile} />
+        <TabSystem tabNames={['My Profile', 'Leaderboard']}>
+          <DashboardContent profile={mockUserProfile} onGoalClick={handleGoalClick} />
           <LeaderboardTab stats={mockLeaderboardData.stats} users={mockLeaderboardData.users} agentAdoption={mockLeaderboardData.agentAdoption} />
         </TabSystem>
         <footer className="text-center text-sm text-gray-400 mt-12 pb-8">
@@ -42,5 +61,6 @@ export function App() {
           </p>
         </footer>
       </main>
-    </div>;
+    </div>
+  );
 }

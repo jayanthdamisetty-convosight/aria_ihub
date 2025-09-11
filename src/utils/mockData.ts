@@ -32,9 +32,10 @@ export interface AnnualGoal {
   id: string;
   title: string;
   target: string;
-  progress: number;
-  progressText: string;
   contributingQueries: number;
+  bookmarkedInsights: number;
+  lastContribution: string;
+  achievementIndicator: 'very-active' | 'moderate' | 'needs-attention';
   color: string;
 }
 export interface ActivityData {
@@ -67,6 +68,15 @@ export interface Achievement {
   unlockedAt?: string;
   progress?: number;
 }
+
+export interface BookmarkedInsight {
+  id: string;
+  query: string;
+  insight: string;
+  date: string;
+  impact: 'high' | 'medium' | 'low';
+  tags: string[];
+}
 // Leaderboard types
 export interface LeaderboardUser {
   rank: number;
@@ -83,6 +93,17 @@ export interface LeaderboardUser {
   };
   streak: number;
   activityHeatmap: number[]; // 0-4 representing activity level for each of the last 28 days
+}
+
+export interface GlobalLeaderboardUser {
+  rank: number;
+  name: string;
+  title: string;
+  company: string;
+  avatar: string;
+  queries: number;
+  hoursSaved: number;
+  badge: 'power' | 'consistent' | 'rising';
 }
 export interface AgentAdoption {
   name: string;
@@ -238,24 +259,32 @@ export const mockUserProfile: UserProfile = (() => {
   const categoryExpertise: CategoryExpertise[] = [{
     name: 'Skin Care',
     count: 134,
-    percentage: 87,
+    percentage: 0, // Will be calculated below
     color: '#FF6B6B'
   }, {
     name: 'Hair Care',
     count: 98,
-    percentage: 64,
+    percentage: 0, // Will be calculated below
     color: '#4ECDC4'
   }, {
     name: 'Cosmetics',
     count: 76,
-    percentage: 49,
+    percentage: 0, // Will be calculated below
     color: '#45B7D1'
   }, {
     name: 'Fragrance',
     count: 45,
-    percentage: 29,
+    percentage: 0, // Will be calculated below
     color: '#96CEB4'
   }];
+
+  // Calculate total queries across all categories
+  const totalCategoryQueries = categoryExpertise.reduce((sum, category) => sum + category.count, 0);
+  
+  // Calculate percentages based on total queries
+  categoryExpertise.forEach(category => {
+    category.percentage = Math.round((category.count / totalCategoryQueries) * 100);
+  });
   // Generate usage patterns
   const usagePatterns: UsagePattern[] = [{
     day: 'Mon',
@@ -344,35 +373,135 @@ export const mockUserProfile: UserProfile = (() => {
     id: 'gen-z',
     title: 'Annual Goal: "Increase Gen Z engagement by 30%"',
     target: 'Increase Gen Z engagement by 30%',
-    progress: 80,
-    progressText: '24% achieved',
     contributingQueries: 147,
+    bookmarkedInsights: 23,
+    lastContribution: '2 days ago',
+    achievementIndicator: 'very-active',
     color: '#4ECDC4'
   }, {
     id: 'products',
     title: 'Annual Goal: "Launch 3 successful new products"',
     target: 'Launch 3 successful new products',
-    progress: 66,
-    progressText: '2 of 3 launched',
     contributingQueries: 89,
+    bookmarkedInsights: 12,
+    lastContribution: '1 week ago',
+    achievementIndicator: 'moderate',
     color: '#FF6B6B'
   }, {
     id: 'sustainability',
     title: 'Annual Goal: "Improve brand perception in sustainability"',
     target: 'Improve brand perception in sustainability',
-    progress: 82,
-    progressText: '82% positive sentiment',
     contributingQueries: 234,
+    bookmarkedInsights: 31,
+    lastContribution: '1 day ago',
+    achievementIndicator: 'very-active',
     color: '#45B7D1'
   }, {
     id: 'opportunities',
     title: 'Annual Goal: "Identify 5 new market opportunities"',
     target: 'Identify 5 new market opportunities',
-    progress: 100,
-    progressText: '7 identified (140%)',
     contributingQueries: 67,
+    bookmarkedInsights: 8,
+    lastContribution: '3 weeks ago',
+    achievementIndicator: 'needs-attention',
     color: '#96CEB4'
   }];
+
+  // Generate mock insights for each goal
+  const generateGoalInsights = (goalId: string): BookmarkedInsight[] => {
+    const insightsByGoal: Record<string, BookmarkedInsight[]> = {
+      'gen-z': [
+        {
+          id: 'gen-z-1',
+          query: 'What are the latest Gen Z social media trends for beauty brands?',
+          insight: 'Gen Z is increasingly drawn to authentic, unfiltered content and values sustainability. TikTok remains the dominant platform, with 78% of Gen Z users discovering new beauty products through short-form video content.',
+          date: '2024-03-15',
+          impact: 'high',
+          tags: ['social media', 'trends', 'authenticity']
+        },
+        {
+          id: 'gen-z-2',
+          query: 'How do Gen Z consumers respond to influencer partnerships?',
+          insight: 'Gen Z shows 3x higher engagement rates with micro-influencers (10K-100K followers) compared to mega-influencers. They value relatability over celebrity status.',
+          date: '2024-03-12',
+          impact: 'high',
+          tags: ['influencers', 'engagement', 'micro-influencers']
+        },
+        {
+          id: 'gen-z-3',
+          query: 'What messaging resonates with Gen Z for sustainable beauty products?',
+          insight: 'Gen Z responds best to transparent messaging about ingredient sourcing and environmental impact. 67% are willing to pay premium for genuinely sustainable products.',
+          date: '2024-03-10',
+          impact: 'medium',
+          tags: ['sustainability', 'messaging', 'pricing']
+        }
+      ],
+      'products': [
+        {
+          id: 'products-1',
+          query: 'What are emerging product categories in the beauty industry?',
+          insight: 'Blue light protection skincare and microbiome-friendly products are showing 45% year-over-year growth. These categories align with post-pandemic wellness trends.',
+          date: '2024-03-14',
+          impact: 'high',
+          tags: ['product development', 'wellness', 'blue light']
+        },
+        {
+          id: 'products-2',
+          query: 'How are competitors launching new products in Q1 2024?',
+          insight: 'Major competitors are focusing on limited-edition collaborations and seasonal launches. The average time-to-market has decreased by 30% due to streamlined development processes.',
+          date: '2024-03-11',
+          impact: 'medium',
+          tags: ['competitors', 'launch strategy', 'time-to-market']
+        }
+      ],
+      'sustainability': [
+        {
+          id: 'sustainability-1',
+          query: 'What sustainability initiatives are resonating with beauty consumers?',
+          insight: 'Refillable packaging programs show 89% customer satisfaction. Consumers prioritize carbon-neutral shipping and biodegradable packaging materials.',
+          date: '2024-03-16',
+          impact: 'high',
+          tags: ['packaging', 'refillable', 'carbon neutral']
+        },
+        {
+          id: 'sustainability-2',
+          query: 'How do consumers perceive our brand\'s sustainability efforts?',
+          insight: 'Brand perception improved by 23% after launching the refillable program. Consumers particularly appreciate the transparency in supply chain reporting.',
+          date: '2024-03-13',
+          impact: 'high',
+          tags: ['brand perception', 'transparency', 'supply chain']
+        },
+        {
+          id: 'sustainability-3',
+          query: 'What are the latest sustainable packaging innovations?',
+          insight: 'Seaweed-based packaging and mushroom-derived materials are emerging as viable alternatives to plastic. These innovations show promise for beauty product applications.',
+          date: '2024-03-09',
+          impact: 'medium',
+          tags: ['packaging innovation', 'biodegradable', 'seaweed']
+        }
+      ],
+      'opportunities': [
+        {
+          id: 'opportunities-1',
+          query: 'What untapped markets exist for premium beauty products?',
+          insight: 'The men\'s grooming market in Southeast Asia shows 34% growth potential. Premium men\'s skincare is particularly underserved in Thailand and Vietnam.',
+          date: '2024-03-08',
+          impact: 'high',
+          tags: ['men\'s grooming', 'Southeast Asia', 'premium']
+        },
+        {
+          id: 'opportunities-2',
+          query: 'How is the aging population affecting beauty product demand?',
+          insight: 'The 50+ demographic is driving 28% of premium beauty sales growth. Anti-aging products with natural ingredients show particular promise.',
+          date: '2024-03-05',
+          impact: 'medium',
+          tags: ['aging population', 'anti-aging', 'natural ingredients']
+        }
+      ]
+    };
+    return insightsByGoal[goalId] || [];
+  };
+
   return {
     userId: 'user123',
     displayName: 'Sarah Chen',
@@ -403,6 +532,135 @@ export const mockUserProfile: UserProfile = (() => {
     achievements
   };
 })();
+
+// Mock global leaderboard data
+export const mockGlobalLeaderboard: GlobalLeaderboardUser[] = [
+  {
+    rank: 1,
+    name: 'Alexandra Rodriguez',
+    title: 'VP of Marketing',
+    company: 'TechCorp',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
+    queries: 2847,
+    hoursSaved: 7118,
+    badge: 'power'
+  },
+  {
+    rank: 2,
+    name: 'Marcus Chen',
+    title: 'Head of Strategy',
+    company: 'InnovateLabs',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
+    queries: 2653,
+    hoursSaved: 6633,
+    badge: 'consistent'
+  },
+  {
+    rank: 3,
+    name: 'Sophie Williams',
+    title: 'Brand Director',
+    company: 'CreativeStudio',
+    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
+    queries: 2398,
+    hoursSaved: 5995,
+    badge: 'rising'
+  }
+];
+
+// Export function to get insights for a specific goal
+export const getGoalInsights = (goalId: string): BookmarkedInsight[] => {
+  const insightsByGoal: Record<string, BookmarkedInsight[]> = {
+    'gen-z': [
+      {
+        id: 'gen-z-1',
+        query: 'What are the latest Gen Z social media trends for beauty brands?',
+        insight: 'Gen Z is increasingly drawn to authentic, unfiltered content and values sustainability. TikTok remains the dominant platform, with 78% of Gen Z users discovering new beauty products through short-form video content.',
+        date: '2024-03-15',
+        impact: 'high',
+        tags: ['social media', 'trends', 'authenticity']
+      },
+      {
+        id: 'gen-z-2',
+        query: 'How do Gen Z consumers respond to influencer partnerships?',
+        insight: 'Gen Z shows 3x higher engagement rates with micro-influencers (10K-100K followers) compared to mega-influencers. They value relatability over celebrity status.',
+        date: '2024-03-12',
+        impact: 'high',
+        tags: ['influencers', 'engagement', 'micro-influencers']
+      },
+      {
+        id: 'gen-z-3',
+        query: 'What messaging resonates with Gen Z for sustainable beauty products?',
+        insight: 'Gen Z responds best to transparent messaging about ingredient sourcing and environmental impact. 67% are willing to pay premium for genuinely sustainable products.',
+        date: '2024-03-10',
+        impact: 'medium',
+        tags: ['sustainability', 'messaging', 'pricing']
+      }
+    ],
+    'products': [
+      {
+        id: 'products-1',
+        query: 'What are emerging product categories in the beauty industry?',
+        insight: 'Blue light protection skincare and microbiome-friendly products are showing 45% year-over-year growth. These categories align with post-pandemic wellness trends.',
+        date: '2024-03-14',
+        impact: 'high',
+        tags: ['product development', 'wellness', 'blue light']
+      },
+      {
+        id: 'products-2',
+        query: 'How are competitors launching new products in Q1 2024?',
+        insight: 'Major competitors are focusing on limited-edition collaborations and seasonal launches. The average time-to-market has decreased by 30% due to streamlined development processes.',
+        date: '2024-03-11',
+        impact: 'medium',
+        tags: ['competitors', 'launch strategy', 'time-to-market']
+      }
+    ],
+    'sustainability': [
+      {
+        id: 'sustainability-1',
+        query: 'What sustainability initiatives are resonating with beauty consumers?',
+        insight: 'Refillable packaging programs show 89% customer satisfaction. Consumers prioritize carbon-neutral shipping and biodegradable packaging materials.',
+        date: '2024-03-16',
+        impact: 'high',
+        tags: ['packaging', 'refillable', 'carbon neutral']
+      },
+      {
+        id: 'sustainability-2',
+        query: 'How do consumers perceive our brand\'s sustainability efforts?',
+        insight: 'Brand perception improved by 23% after launching the refillable program. Consumers particularly appreciate the transparency in supply chain reporting.',
+        date: '2024-03-13',
+        impact: 'high',
+        tags: ['brand perception', 'transparency', 'supply chain']
+      },
+      {
+        id: 'sustainability-3',
+        query: 'What are the latest sustainable packaging innovations?',
+        insight: 'Seaweed-based packaging and mushroom-derived materials are emerging as viable alternatives to plastic. These innovations show promise for beauty product applications.',
+        date: '2024-03-09',
+        impact: 'medium',
+        tags: ['packaging innovation', 'biodegradable', 'seaweed']
+      }
+    ],
+    'opportunities': [
+      {
+        id: 'opportunities-1',
+        query: 'What untapped markets exist for premium beauty products?',
+        insight: 'The men\'s grooming market in Southeast Asia shows 34% growth potential. Premium men\'s skincare is particularly underserved in Thailand and Vietnam.',
+        date: '2024-03-08',
+        impact: 'high',
+        tags: ['men\'s grooming', 'Southeast Asia', 'premium']
+      },
+      {
+        id: 'opportunities-2',
+        query: 'How is the aging population affecting beauty product demand?',
+        insight: 'The 50+ demographic is driving 28% of premium beauty sales growth. Anti-aging products with natural ingredients show particular promise.',
+        date: '2024-03-05',
+        impact: 'medium',
+        tags: ['aging population', 'anti-aging', 'natural ingredients']
+      }
+    ]
+  };
+  return insightsByGoal[goalId] || [];
+};
 
 // Mock leaderboard data
 export const mockLeaderboardData = {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { QueryType, CategoryExpertise, UsagePattern } from '../utils/mockData';
 interface AnalyticsDashboardProps {
   queryTypes: QueryType[];
@@ -10,6 +10,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   categoryExpertise,
   usagePatterns
 }) => {
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  
   // Calculate total queries for percentages
   const totalQueries = queryTypes.reduce((sum, type) => sum + type.count, 0);
   return <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -41,26 +43,110 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       {/* Category Expertise */}
       <div className="bg-white rounded-xl p-8">
         <h2 className="text-xl font-light mb-6">My Category Expertise</h2>
-        <div className="grid grid-cols-2 gap-6">
-          {categoryExpertise.map(category => <div key={category.name} className="text-center">
-              <h3 className="text-sm text-gray-700 mb-4">{category.name}</h3>
-              <div className="relative inline-block w-20 h-20 mb-3">
-                <svg viewBox="0 0 36 36" className="w-full h-full">
-                  <path d="M18 2.0845
-                      a 15.9155 15.9155 0 0 1 0 31.831
-                      a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f3f4f6" strokeWidth="2" />
-                  <path d="M18 2.0845
-                      a 15.9155 15.9155 0 0 1 0 31.831
-                      a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={category.color} strokeWidth="2" strokeDasharray={`${category.percentage}, 100`} />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-light">
-                    {category.percentage}%
-                  </span>
-                </div>
-              </div>
-              <p className="text-sm text-gray-500">{category.count} queries</p>
-            </div>)}
+        <div className="flex items-center justify-center">
+          <div className="relative">
+            {/* 3D Pie Chart */}
+            <div className="relative w-64 h-64">
+              <svg viewBox="0 0 200 200" className="w-full h-full transform rotate-[-90deg]">
+                {(() => {
+                  let cumulativePercentage = 0;
+                  const radius = 80;
+                  const centerX = 100;
+                  const centerY = 100;
+                  
+                  return categoryExpertise.map((category, index) => {
+                    const percentage = category.percentage;
+                    const startAngle = (cumulativePercentage / 100) * 360;
+                    const endAngle = ((cumulativePercentage + percentage) / 100) * 360;
+                    
+                    const startAngleRad = (startAngle * Math.PI) / 180;
+                    const endAngleRad = (endAngle * Math.PI) / 180;
+                    
+                    const x1 = centerX + radius * Math.cos(startAngleRad);
+                    const y1 = centerY + radius * Math.sin(startAngleRad);
+                    const x2 = centerX + radius * Math.cos(endAngleRad);
+                    const y2 = centerY + radius * Math.sin(endAngleRad);
+                    
+                    const largeArcFlag = percentage > 50 ? 1 : 0;
+                    
+                    const pathData = [
+                      `M ${centerX} ${centerY}`,
+                      `L ${x1} ${y1}`,
+                      `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+                      'Z'
+                    ].join(' ');
+                    
+                    cumulativePercentage += percentage;
+                    
+                    const isHovered = hoveredCategory === category.name;
+                    const isOtherHovered = hoveredCategory && hoveredCategory !== category.name;
+                    
+                    return (
+                      <path
+                        key={category.name}
+                        d={pathData}
+                        fill={isOtherHovered ? '#E5E7EB' : category.color}
+                        stroke="white"
+                        strokeWidth="2"
+                        style={{
+                          filter: isHovered 
+                            ? 'drop-shadow(0 6px 12px rgba(0,0,0,0.15))' 
+                            : 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
+                          transform: isHovered 
+                            ? `translateZ(${index * 2 + 4}px) scale(1.02)` 
+                            : `translateZ(${index * 2}px)`,
+                          transition: 'all 0.2s ease-in-out',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={() => setHoveredCategory(category.name)}
+                        onMouseLeave={() => setHoveredCategory(null)}
+                      />
+                    );
+                  });
+                })()}
+              </svg>
+            </div>
+            
+            {/* Legend */}
+            <div className="mt-6 grid grid-cols-2 gap-4">
+              {categoryExpertise.map(category => {
+                const isHovered = hoveredCategory === category.name;
+                const isOtherHovered = hoveredCategory && hoveredCategory !== category.name;
+                
+                return (
+                  <div 
+                    key={category.name} 
+                    className={`flex items-center transition-all duration-200 ${
+                      isOtherHovered ? 'opacity-40' : 'opacity-100'
+                    }`}
+                    onMouseEnter={() => setHoveredCategory(category.name)}
+                    onMouseLeave={() => setHoveredCategory(null)}
+                  >
+                    <div 
+                      className={`w-3 h-3 rounded-full mr-3 transition-all duration-200 ${
+                        isHovered ? 'scale-125' : 'scale-100'
+                      }`}
+                      style={{ 
+                        backgroundColor: isOtherHovered ? '#E5E7EB' : category.color 
+                      }}
+                    />
+                    <div className="flex-1">
+                      <div className={`text-sm font-medium transition-colors duration-200 ${
+                        isHovered ? 'text-gray-900' : isOtherHovered ? 'text-gray-400' : 'text-gray-900'
+                      }`}>
+                        {category.name}
+                      </div>
+                      <div className={`text-xs transition-colors duration-200 ${
+                        isHovered ? 'text-gray-600' : isOtherHovered ? 'text-gray-300' : 'text-gray-500'
+                      }`}>
+                        {category.count} queries ({category.percentage}%)
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
       {/* Usage Patterns */}

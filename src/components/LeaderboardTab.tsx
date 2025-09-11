@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LeaderboardUser, AgentAdoption, LeaderboardStats } from '../utils/mockData';
+import { LeaderboardUser, AgentAdoption, LeaderboardStats, mockGlobalLeaderboard, GlobalLeaderboardUser } from '../utils/mockData';
 interface LeaderboardTabProps {
   stats: LeaderboardStats;
   users: LeaderboardUser[];
@@ -10,7 +10,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
   users,
   agentAdoption
 }) => {
-  const [activeView, setActiveView] = useState<'power' | 'consistent' | 'rising'>('power');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [timePeriod, setTimePeriod] = useState('month');
   // Additional data for users (mock data for hours saved and goal alignment)
   const getUserMetrics = (user: LeaderboardUser) => {
@@ -148,8 +148,10 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
   });
   // Combine original users with additional users
   const allUsers = [...updatedUsers, ...additionalUsers];
-  // Filter users based on active view
-  const filteredUsers = allUsers.filter(user => user.badges.includes(activeView));
+  // Filter users based on selected category
+  const filteredUsers = selectedCategory === 'all' 
+    ? allUsers 
+    : allUsers.filter(user => user.badges.includes(selectedCategory as 'power' | 'consistent' | 'rising'));
   // Badge colors
   const badgeColors = {
     power: 'bg-amber-50 text-amber-700 border-amber-200',
@@ -174,25 +176,31 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <StatCard label="Active Users" value={247} change={`↑ ${stats.activeUsers.change}% from last month`} positive={true} />
-        <StatCard label="Total Queries" value={18432} change={`↑ ${stats.totalQueries.change}% from last month`} positive={true} />
-        <StatCard label="Avg Queries per user" value={75} change={`↑ ${stats.avgPerUser.change}% from last month`} positive={true} />
-        <StatCard label="Total hours saved" value={46080} change={`↑ ${stats.totalQueries.change}% from last month`} positive={true} />
-        <StatCard label="Team Goal achievement" value="76%" change={`↑ ${stats.adoptionRate.change}% from last month`} positive={true} />
-        <StatCard label="Agent Usage Rate" value="68%" change={`↑ ${stats.adoptionRate.change}% from last month`} positive={true} />
+      <div className="flex justify-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl">
+          <StatCard label="Active Users" value={247} change={`↑ ${stats.activeUsers.change}% from last month`} positive={true} />
+          <StatCard label="Total Queries" value={18432} change={`↑ ${stats.totalQueries.change}% from last month`} positive={true} />
+          <StatCard label="Avg Queries per user" value={75} change={`↑ ${stats.avgPerUser.change}% from last month`} positive={true} />
+          <StatCard label="Total hours saved" value={46080} change={`↑ ${stats.totalQueries.change}% from last month`} positive={true} />
+        </div>
       </div>
 
       {/* Top Users Leaderboard */}
       <div className="bg-white rounded-xl p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
           <h2 className="text-xl font-light">Top Users This Month</h2>
-          <div className="inline-flex rounded-full bg-gray-100 p-1">
-            {['power', 'consistent', 'rising'].map(view => <button key={view} className={`px-4 py-2 rounded-full text-sm font-light transition-all flex items-center gap-2
-                  ${activeView === view ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setActiveView(view as 'power' | 'consistent' | 'rising')}>
-                {badgeIcons[view as keyof typeof badgeIcons]}{' '}
-                {view === 'power' ? 'Power Users' : view === 'consistent' ? 'Most Consistent' : 'Rising Stars'}
-              </button>)}
+          <div className="flex items-center gap-3">
+            <label className="text-sm text-gray-600">Filter by category:</label>
+            <select 
+              value={selectedCategory} 
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+            >
+              <option value="all">All Users</option>
+              <option value="power">⚡ Power Users</option>
+              <option value="consistent">📊 Most Consistent</option>
+              <option value="rising">🚀 Rising Stars</option>
+            </select>
           </div>
         </div>
 
@@ -212,11 +220,8 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
                 <th className="py-4 px-3 text-left text-xs font-light uppercase tracking-wider text-gray-500">
                   Category
                 </th>
-                <th className="py-4 px-3 text-left text-xs font-light uppercase tracking-wider text-gray-500 col-span-2">
-                  Metrics
-                </th>
                 <th className="py-4 px-3 text-left text-xs font-light uppercase tracking-wider text-gray-500">
-                  Goal Progress
+                  Metrics
                 </th>
               </tr>
             </thead>
@@ -248,7 +253,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
                             </span>)}
                         </div>
                       </td>
-                      <td className="py-4 px-3 col-span-2">
+                      <td className="py-4 px-3">
                         <div className="space-y-3">
                           {/* Queries Metric */}
                           <div className="flex items-center gap-2">
@@ -284,20 +289,9 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-3">
-                        <div>
-                          <div className="font-mono text-sm">
-                            {getProgressBar(metrics.goalsOnTrack, metrics.totalGoals)}
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            {metrics.goalsOnTrack} of {metrics.totalGoals}{' '}
-                            annual goals on track
-                          </div>
-                        </div>
-                      </td>
                     </tr>;
             }) : <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-500">
+                  <td colSpan={5} className="py-8 text-center text-gray-500">
                     No users match the selected filter.
                   </td>
                 </tr>}
@@ -334,6 +328,155 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
                 </div>
               </div>;
         })}
+        </div>
+      </div>
+
+      {/* Horizontal Separator */}
+      <div className="border-t border-gray-200 my-12"></div>
+
+      {/* Global Top 3 Leaderboard */}
+      <div className="bg-gradient-to-br from-green-50 via-white to-emerald-50 rounded-xl p-8 relative overflow-hidden border border-green-100">
+        {/* Subtle green gradient background elements */}
+        <div className="absolute inset-0 opacity-3">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-green-200 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-24 h-24 bg-emerald-200 rounded-full blur-2xl"></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-green-100 rounded-full blur-xl"></div>
+        </div>
+        
+        <div className="relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl font-light text-gray-900 mb-2">
+              Global Top Performers
+            </h2>
+            <p className="text-gray-500 font-light">
+              Join the elite. Top performers receive exclusive recognition from Convotrack Team.
+            </p>
+          </div>
+
+          {/* Olympic Podium Layout with Apple-inspired minimalism */}
+          <div className="flex justify-center items-end gap-8 max-w-5xl mx-auto">
+            {/* 2nd Place - Left Podium */}
+            <div className="flex flex-col items-center p-4 rounded-xl border-2 border-gray-200 bg-white/50 backdrop-blur-sm">
+              {/* Podium Base */}
+              <div className="w-32 h-8 bg-gradient-to-r from-gray-200 to-gray-300 rounded-t-lg mb-4 relative border border-gray-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-gray-200 rounded-t-lg opacity-50"></div>
+                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-gray-400 rounded-full"></div>
+              </div>
+              
+              {/* Avatar */}
+              <div className="relative mb-4">
+                <div className="w-20 h-20 rounded-full overflow-hidden border-3 border-gray-400 bg-white shadow-lg">
+                  <img 
+                    src={mockGlobalLeaderboard[1].avatar} 
+                    alt={mockGlobalLeaderboard[1].name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -top-1 -right-1 w-7 h-7 bg-gray-500 rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                  <span className="text-xs font-semibold text-white">2</span>
+                </div>
+              </div>
+              
+              {/* User Info */}
+              <div className="text-center">
+                <h3 className="font-medium text-gray-900 text-sm">{mockGlobalLeaderboard[1].name}</h3>
+                <p className="text-xs text-gray-500">{mockGlobalLeaderboard[1].title}</p>
+                <p className="text-xs text-gray-400">{mockGlobalLeaderboard[1].company}</p>
+                <div className="mt-2 space-y-1">
+                  <div className="text-xs text-gray-600">
+                    {mockGlobalLeaderboard[1].queries.toLocaleString()} queries
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    {mockGlobalLeaderboard[1].hoursSaved.toLocaleString()} hours saved
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 1st Place - Center Podium (Elevated) */}
+            <div className="flex flex-col items-center p-6 rounded-xl border-3 border-amber-200 bg-white/60 backdrop-blur-sm shadow-lg">
+              {/* Elevated Podium Base */}
+              <div className="w-40 h-12 bg-gradient-to-r from-amber-200 to-amber-300 rounded-t-lg mb-4 relative shadow-lg border border-amber-300">
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-100 to-amber-200 rounded-t-lg opacity-60"></div>
+                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-amber-500 rounded-full shadow-sm"></div>
+                <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-amber-600 rounded-full"></div>
+              </div>
+              
+              {/* Avatar */}
+              <div className="relative mb-4">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-amber-400 bg-white shadow-xl">
+                  <img 
+                    src={mockGlobalLeaderboard[0].avatar} 
+                    alt={mockGlobalLeaderboard[0].name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -top-1 -right-1 w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                  <span className="text-sm font-bold text-white">1</span>
+                </div>
+              </div>
+              
+              {/* User Info */}
+              <div className="text-center">
+                <h3 className="font-medium text-gray-900">{mockGlobalLeaderboard[0].name}</h3>
+                <p className="text-sm text-gray-500">{mockGlobalLeaderboard[0].title}</p>
+                <p className="text-sm text-gray-400">{mockGlobalLeaderboard[0].company}</p>
+                <div className="mt-2 space-y-1">
+                  <div className="text-sm text-gray-600">
+                    {mockGlobalLeaderboard[0].queries.toLocaleString()} queries
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {mockGlobalLeaderboard[0].hoursSaved.toLocaleString()} hours saved
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3rd Place - Right Podium */}
+            <div className="flex flex-col items-center p-4 rounded-xl border-2 border-amber-200 bg-white/50 backdrop-blur-sm">
+              {/* Podium Base */}
+              <div className="w-32 h-6 bg-gradient-to-r from-amber-300 to-amber-400 rounded-t-lg mb-4 relative border border-amber-400">
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-200 to-amber-300 rounded-t-lg opacity-50"></div>
+                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-amber-600 rounded-full"></div>
+              </div>
+              
+              {/* Avatar */}
+              <div className="relative mb-4">
+                <div className="w-20 h-20 rounded-full overflow-hidden border-3 border-amber-500 bg-white shadow-lg">
+                  <img 
+                    src={mockGlobalLeaderboard[2].avatar} 
+                    alt={mockGlobalLeaderboard[2].name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="absolute -top-1 -right-1 w-7 h-7 bg-amber-600 rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                  <span className="text-xs font-semibold text-white">3</span>
+                </div>
+              </div>
+              
+              {/* User Info */}
+              <div className="text-center">
+                <h3 className="font-medium text-gray-900 text-sm">{mockGlobalLeaderboard[2].name}</h3>
+                <p className="text-xs text-gray-500">{mockGlobalLeaderboard[2].title}</p>
+                <p className="text-xs text-gray-400">{mockGlobalLeaderboard[2].company}</p>
+                <div className="mt-2 space-y-1">
+                  <div className="text-xs text-gray-600">
+                    {mockGlobalLeaderboard[2].queries.toLocaleString()} queries
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    {mockGlobalLeaderboard[2].hoursSaved.toLocaleString()} hours saved
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Recognition Message */}
+          <div className="text-center mt-12 pt-6 border-t border-gray-200">
+            <p className="text-sm text-gray-500 font-light">
+              🎁 Exclusive recognition and prizes delivered by Convotrack Team
+            </p>
+          </div>
         </div>
       </div>
     </div>;
