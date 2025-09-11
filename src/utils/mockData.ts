@@ -662,35 +662,108 @@ export const getGoalInsights = (goalId: string): BookmarkedInsight[] => {
   return insightsByGoal[goalId] || [];
 };
 
-// Mock leaderboard data
+// Mock leaderboard data for different time periods
 export const mockLeaderboardData = {
-  stats: {
-    activeUsers: {
-      value: 247,
-      change: 12
+  today: {
+    stats: {
+      activeUsers: { value: 23, change: 8 },
+      adoptionRate: { value: 68, change: 8 },
+      totalQueries: { value: '1.2K', change: 15 },
+      avgPerUser: { value: 52.2, change: 5 },
+      dailyActive: { value: 89, percentage: 36 },
+      avgAgentsUsed: { value: 5.2, total: 9 }
     },
-    adoptionRate: {
-      value: 68,
-      change: 8
-    },
-    totalQueries: {
-      value: '18.4K',
-      change: 24
-    },
-    avgPerUser: {
-      value: 74.5,
-      change: 11
-    },
-    dailyActive: {
-      value: 89,
-      percentage: 36
-    },
-    avgAgentsUsed: {
-      value: 5.2,
-      total: 9
-    }
+    users: [
+      { rank: 1, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'JL', name: 'James Liu', title: 'Marketing Manager', badges: ['rising'], queries: 52, activeDays: { count: 1, total: 1, percentage: 100 }, streak: 21, activityHeatmap: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] },
+      { rank: 2, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'SC', name: 'Sarah Chen', title: 'Senior Brand Manager', badges: ['power', 'consistent'], queries: 48, activeDays: { count: 1, total: 1, percentage: 100 }, streak: 47, activityHeatmap: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3] },
+      { rank: 3, avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'RD', name: 'Rachel Davis', title: 'Brand Director', badges: ['consistent'], queries: 41, activeDays: { count: 1, total: 1, percentage: 100 }, streak: 18, activityHeatmap: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3] },
+      { rank: 4, avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'MK', name: 'Michael Kumar', title: 'Strategy Director', badges: ['power'], queries: 35, activeDays: { count: 1, total: 1, percentage: 100 }, streak: 32, activityHeatmap: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] },
+      { rank: 5, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'AP', name: 'Amanda Park', title: 'Product Manager', badges: ['consistent'], queries: 29, activeDays: { count: 1, total: 1, percentage: 100 }, streak: 28, activityHeatmap: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] }
+    ],
+    agentAdoption: [{
+      name: 'Trend Analysis',
+      usagePercentage: 89
+    }, {
+      name: 'Competitor Intel',
+      usagePercentage: 76
+    }, {
+      name: 'Visual Content Analysis',
+      usagePercentage: 67
+    }, {
+      name: 'Deep Research',
+      usagePercentage: 54
+    }, {
+      name: 'Influencer Discovery',
+      usagePercentage: 48
+    }, {
+      name: 'Content Ideas',
+      usagePercentage: 41
+    }, {
+      name: 'Product Development',
+      usagePercentage: 38
+    }, {
+      name: 'Engagement Summary',
+      usagePercentage: 32
+    }, {
+      name: 'Emerging Trends',
+      usagePercentage: 27
+    }]
   },
-  users: [{
+  week: {
+    stats: {
+      activeUsers: { value: 89, change: 15 },
+      adoptionRate: { value: 68, change: 8 },
+      totalQueries: { value: '4.8K', change: 18 },
+      avgPerUser: { value: 54.0, change: 8 },
+      dailyActive: { value: 89, percentage: 36 },
+      avgAgentsUsed: { value: 5.2, total: 9 }
+    },
+    users: [
+      { rank: 1, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'AP', name: 'Amanda Park', title: 'Product Manager', badges: ['consistent'], queries: 201, activeDays: { count: 7, total: 7, percentage: 100 }, streak: 28, activityHeatmap: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] },
+      { rank: 2, avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'MK', name: 'Michael Kumar', title: 'Strategy Director', badges: ['power'], queries: 187, activeDays: { count: 6, total: 7, percentage: 86 }, streak: 32, activityHeatmap: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3] },
+      { rank: 3, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'SC', name: 'Sarah Chen', title: 'Senior Brand Manager', badges: ['power', 'consistent'], queries: 172, activeDays: { count: 7, total: 7, percentage: 100 }, streak: 47, activityHeatmap: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3] },
+      { rank: 4, avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'RD', name: 'Rachel Davis', title: 'Brand Director', badges: ['consistent'], queries: 145, activeDays: { count: 6, total: 7, percentage: 86 }, streak: 18, activityHeatmap: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] },
+      { rank: 5, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'JL', name: 'James Liu', title: 'Marketing Manager', badges: ['rising'], queries: 128, activeDays: { count: 5, total: 7, percentage: 71 }, streak: 21, activityHeatmap: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] }
+    ],
+    agentAdoption: [{
+      name: 'Trend Analysis',
+      usagePercentage: 89
+    }, {
+      name: 'Competitor Intel',
+      usagePercentage: 76
+    }, {
+      name: 'Visual Content Analysis',
+      usagePercentage: 67
+    }, {
+      name: 'Deep Research',
+      usagePercentage: 54
+    }, {
+      name: 'Influencer Discovery',
+      usagePercentage: 48
+    }, {
+      name: 'Content Ideas',
+      usagePercentage: 41
+    }, {
+      name: 'Product Development',
+      usagePercentage: 38
+    }, {
+      name: 'Engagement Summary',
+      usagePercentage: 32
+    }, {
+      name: 'Emerging Trends',
+      usagePercentage: 27
+    }]
+  },
+  month: {
+    stats: {
+      activeUsers: { value: 247, change: 12 },
+      adoptionRate: { value: 68, change: 8 },
+      totalQueries: { value: '18.4K', change: 24 },
+      avgPerUser: { value: 74.5, change: 11 },
+      dailyActive: { value: 89, percentage: 36 },
+      avgAgentsUsed: { value: 5.2, total: 9 }
+    },
+    users: [{
     rank: 1,
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
     initials: 'SC',
@@ -707,7 +780,7 @@ export const mockLeaderboardData = {
     activityHeatmap: [3, 4, 3, 4, 4, 2, 1, 4, 4, 3, 4, 3, 1, 2, 4, 3, 4, 4, 3, 0, 1, 3, 4, 4, 3, 4, 2, 1]
   }, {
     rank: 2,
-    avatar: '',
+    avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
     initials: 'MK',
     name: 'Michael Kumar',
     title: 'Strategy Director',
@@ -722,7 +795,7 @@ export const mockLeaderboardData = {
     activityHeatmap: [3, 3, 4, 3, 3, 1, 0, 4, 3, 3, 4, 3, 2, 1, 3, 4, 3, 3, 4, 1, 0, 4, 3, 3, 4, 3, 2, 1]
   }, {
     rank: 3,
-    avatar: '',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
     initials: 'AP',
     name: 'Amanda Park',
     title: 'Product Manager',
@@ -737,7 +810,7 @@ export const mockLeaderboardData = {
     activityHeatmap: [2, 3, 3, 4, 3, 1, 0, 3, 3, 4, 3, 2, 1, 1, 4, 3, 3, 3, 4, 0, 0, 3, 4, 3, 3, 3, 1, 2]
   }, {
     rank: 4,
-    avatar: '',
+    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
     initials: 'JL',
     name: 'James Liu',
     title: 'Marketing Manager',
@@ -752,7 +825,7 @@ export const mockLeaderboardData = {
     activityHeatmap: [2, 3, 2, 3, 3, 0, 0, 3, 2, 3, 3, 2, 1, 0, 3, 3, 2, 3, 3, 0, 1, 2, 3, 3, 2, 3, 1, 0]
   }, {
     rank: 5,
-    avatar: '',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
     initials: 'RD',
     name: 'Rachel Davis',
     title: 'Brand Director',
@@ -767,7 +840,7 @@ export const mockLeaderboardData = {
     activityHeatmap: [2, 2, 3, 2, 2, 0, 0, 3, 2, 2, 3, 2, 1, 0, 2, 3, 2, 2, 3, 0, 0, 2, 2, 3, 2, 2, 1, 1]
   }, {
     rank: 6,
-    avatar: '',
+    avatar: 'https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
     initials: 'TW',
     name: 'Tom Wilson',
     title: 'Junior Analyst',
@@ -782,7 +855,7 @@ export const mockLeaderboardData = {
     activityHeatmap: [1, 2, 2, 3, 2, 0, 0, 2, 2, 3, 2, 1, 1, 0, 2, 3, 3, 2, 2, 0, 1, 2, 3, 2, 2, 3, 1, 1]
   }, {
     rank: 7,
-    avatar: '',
+    avatar: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
     initials: 'EJ',
     name: 'Emily Johnson',
     title: 'Creative Director',
@@ -823,5 +896,79 @@ export const mockLeaderboardData = {
   }, {
     name: 'Emerging Trends',
     usagePercentage: 27
-  }]
+  }],
+    agentAdoption: [{
+      name: 'Trend Analysis',
+      usagePercentage: 89
+    }, {
+      name: 'Competitor Intel',
+      usagePercentage: 76
+    }, {
+      name: 'Visual Content Analysis',
+      usagePercentage: 67
+    }, {
+      name: 'Deep Research',
+      usagePercentage: 54
+    }, {
+      name: 'Influencer Discovery',
+      usagePercentage: 48
+    }, {
+      name: 'Content Ideas',
+      usagePercentage: 41
+    }, {
+      name: 'Product Development',
+      usagePercentage: 38
+    }, {
+      name: 'Engagement Summary',
+      usagePercentage: 32
+    }, {
+      name: 'Emerging Trends',
+      usagePercentage: 27
+    }]
+  },
+  quarter: {
+    stats: {
+      activeUsers: { value: 892, change: 18 },
+      adoptionRate: { value: 68, change: 8 },
+      totalQueries: { value: '67.2K', change: 32 },
+      avgPerUser: { value: 75.3, change: 15 },
+      dailyActive: { value: 89, percentage: 36 },
+      avgAgentsUsed: { value: 5.2, total: 9 }
+    },
+    users: [
+      { rank: 1, avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'RD', name: 'Rachel Davis', title: 'Brand Director', badges: ['consistent'], queries: 4123, activeDays: { count: 88, total: 90, percentage: 98 }, streak: 18, activityHeatmap: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] },
+      { rank: 2, avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'JL', name: 'James Liu', title: 'Marketing Manager', badges: ['rising'], queries: 3789, activeDays: { count: 86, total: 90, percentage: 96 }, streak: 21, activityHeatmap: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3] },
+      { rank: 3, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'SC', name: 'Sarah Chen', title: 'Senior Brand Manager', badges: ['power', 'consistent'], queries: 3456, activeDays: { count: 89, total: 90, percentage: 99 }, streak: 47, activityHeatmap: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3] },
+      { rank: 4, avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'AP', name: 'Amanda Park', title: 'Product Manager', badges: ['consistent'], queries: 3123, activeDays: { count: 85, total: 90, percentage: 94 }, streak: 28, activityHeatmap: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] },
+      { rank: 5, avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80', initials: 'MK', name: 'Michael Kumar', title: 'Strategy Director', badges: ['power'], queries: 2890, activeDays: { count: 87, total: 90, percentage: 97 }, streak: 32, activityHeatmap: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] }
+    ],
+    agentAdoption: [{
+      name: 'Trend Analysis',
+      usagePercentage: 89
+    }, {
+      name: 'Competitor Intel',
+      usagePercentage: 76
+    }, {
+      name: 'Visual Content Analysis',
+      usagePercentage: 67
+    }, {
+      name: 'Deep Research',
+      usagePercentage: 54
+    }, {
+      name: 'Influencer Discovery',
+      usagePercentage: 48
+    }, {
+      name: 'Content Ideas',
+      usagePercentage: 41
+    }, {
+      name: 'Product Development',
+      usagePercentage: 38
+    }, {
+      name: 'Engagement Summary',
+      usagePercentage: 32
+    }, {
+      name: 'Emerging Trends',
+      usagePercentage: 27
+    }]
+  }
 };

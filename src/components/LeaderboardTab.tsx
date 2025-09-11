@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LeaderboardUser, AgentAdoption, LeaderboardStats, mockGlobalLeaderboard, GlobalLeaderboardUser } from '../utils/mockData';
+import { LeaderboardUser, AgentAdoption, LeaderboardStats, mockGlobalLeaderboard, GlobalLeaderboardUser, mockLeaderboardData } from '../utils/mockData';
 interface LeaderboardTabProps {
   stats: LeaderboardStats;
   users: LeaderboardUser[];
@@ -11,7 +11,13 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
   agentAdoption
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [timePeriod, setTimePeriod] = useState('month');
+  const [timePeriod, setTimePeriod] = useState<'today' | 'week' | 'month' | 'quarter'>('month');
+  
+  // Get current data based on selected time period
+  const currentData = mockLeaderboardData[timePeriod];
+  const currentStats = currentData.stats;
+  const currentUsers = currentData.users;
+  const currentAgentAdoption = currentData.agentAdoption;
   // Additional data for users (mock data for hours saved and goal alignment)
   const getUserMetrics = (user: LeaderboardUser) => {
     // Calculate hours saved based on queries (approx 2.5 hours per query)
@@ -136,18 +142,8 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
     streak: 4,
     activityHeatmap: [1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0]
   }];
-  // Update existing users to have real avatar URLs
-  const updatedUsers = users.map(user => {
-    if (!user.avatar) {
-      return {
-        ...user,
-        avatar: user.rank === 2 ? 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80' : user.rank === 3 ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80' : user.rank === 4 ? 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80' : user.rank === 5 ? 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80' : user.rank === 6 ? 'https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80' : 'https://images.unsplash.com/photo-1554151228-14d9def656e4?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80'
-      };
-    }
-    return user;
-  });
-  // Combine original users with additional users
-  const allUsers = [...updatedUsers, ...additionalUsers];
+  // Use current users data based on time period
+  const allUsers = currentUsers;
   // Filter users based on selected category
   const filteredUsers = selectedCategory === 'all' 
     ? allUsers 
@@ -166,22 +162,22 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
   };
   return <div className="space-y-10">
       {/* Time Period Selector */}
-      <div className="flex justify-center">
-        <div className="inline-flex rounded-full bg-gray-100 p-1">
-          {['today', 'week', 'month', 'quarter'].map(period => <button key={period} className={`px-5 py-2 rounded-full text-sm font-light transition-all
-                ${timePeriod === period ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setTimePeriod(period)}>
-              {period.charAt(0).toUpperCase() + period.slice(1)}
-            </button>)}
+        <div className="flex justify-center">
+          <div className="inline-flex rounded-full bg-gray-100 p-1">
+            {(['today', 'week', 'month', 'quarter'] as const).map(period => <button key={period} className={`px-5 py-2 rounded-full text-sm font-light transition-all
+                  ${timePeriod === period ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`} onClick={() => setTimePeriod(period)}>
+                {period.charAt(0).toUpperCase() + period.slice(1)}
+              </button>)}
+          </div>
         </div>
-      </div>
 
       {/* Stats Grid */}
       <div className="flex justify-center">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl">
-          <StatCard label="Active Users" value={247} change={`↑ ${stats.activeUsers.change}% from last month`} positive={true} />
-          <StatCard label="Total Queries" value={18432} change={`↑ ${stats.totalQueries.change}% from last month`} positive={true} />
-          <StatCard label="Avg Queries per user" value={75} change={`↑ ${stats.avgPerUser.change}% from last month`} positive={true} />
-          <StatCard label="Total hours saved" value={46080} change={`↑ ${stats.totalQueries.change}% from last month`} positive={true} />
+          <StatCard label="Active Users" value={currentStats.activeUsers.value} change={`↑ ${currentStats.activeUsers.change}% from last ${timePeriod === 'today' ? 'day' : timePeriod === 'week' ? 'week' : timePeriod === 'month' ? 'month' : 'quarter'}`} positive={true} />
+          <StatCard label="Total Queries" value={currentStats.totalQueries.value} change={`↑ ${currentStats.totalQueries.change}% from last ${timePeriod === 'today' ? 'day' : timePeriod === 'week' ? 'week' : timePeriod === 'month' ? 'month' : 'quarter'}`} positive={true} />
+          <StatCard label="Avg Queries per user" value={currentStats.avgPerUser.value} change={`↑ ${currentStats.avgPerUser.change}% from last ${timePeriod === 'today' ? 'day' : timePeriod === 'week' ? 'week' : timePeriod === 'month' ? 'month' : 'quarter'}`} positive={true} />
+          <StatCard label="Total hours saved" value={Math.round(parseFloat(currentStats.totalQueries.value.replace('K', '')) * 1000 * 2.5)} change={`↑ ${currentStats.totalQueries.change}% from last ${timePeriod === 'today' ? 'day' : timePeriod === 'week' ? 'week' : timePeriod === 'month' ? 'month' : 'quarter'}`} positive={true} />
         </div>
       </div>
 
@@ -237,7 +233,13 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
                         </span>
                       </td>
                       <td className="py-4 px-3">
-                        <img src={user.avatar} alt={user.name} className="w-9 h-9 rounded-full object-cover" />
+                        {user.avatar ? (
+                          <img src={user.avatar} alt={user.name} className="w-9 h-9 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-medium">
+                            {user.initials}
+                          </div>
+                        )}
                       </td>
                       <td className="py-4 px-3">
                         <div className="font-medium text-sm">{user.name}</div>
@@ -304,7 +306,7 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
       <div className="bg-white rounded-xl p-8">
         <h2 className="text-xl font-light mb-8">Agent Usage Rate</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {agentAdoption.map(agent => {
+          {currentAgentAdoption.map(agent => {
           // Determine color based on adoption percentage
           let barColor = '';
           if (agent.usagePercentage >= 70) {
@@ -350,6 +352,9 @@ const LeaderboardTab: React.FC<LeaderboardTabProps> = ({
             </h2>
             <p className="text-gray-500 font-light">
               Join the elite. Top performers receive exclusive recognition from Convotrack Team.
+            </p>
+            <p className="text-sm text-gray-400 font-light mt-2">
+              Latest Quarter (Q4 2025)
             </p>
           </div>
 
