@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import TabSystem from './components/TabSystem';
+import { useState } from 'react';
 import DashboardContent from './components/DashboardContent';
-import LeaderboardTab from './components/LeaderboardTab';
 import GoalInsightsLibrary from './components/GoalInsightsLibrary';
-import { mockUserProfile, mockLeaderboardData, getGoalInsights, AnnualGoal } from './utils/mockData';
+import { mockUserProfile, getGoalInsights, AnnualGoal } from './utils/mockData';
 
 export function App() {
   const [selectedGoal, setSelectedGoal] = useState<AnnualGoal | null>(null);
@@ -33,16 +31,13 @@ export function App() {
       <main className="max-w-5xl mx-auto px-6 py-12">
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-light tracking-tight text-gray-900 mb-3">
-            ARIA's   i-hub
+            ARIA's i-hub
           </h1>
           <p className="text-gray-500 font-light">
-            Track your social media intelligence journey
+            Your personal social media intelligence journey
           </p>
         </div>
-        <TabSystem tabNames={['My Profile', 'Leaderboard']}>
-          <DashboardContent profile={mockUserProfile} onGoalClick={handleGoalClick} />
-          <LeaderboardTab stats={mockLeaderboardData.stats} users={mockLeaderboardData.users} agentAdoption={mockLeaderboardData.agentAdoption} />
-        </TabSystem>
+        <DashboardContent profile={mockUserProfile} onGoalClick={handleGoalClick} />
         <footer className="text-center text-sm text-gray-400 mt-12 pb-8">
           <p>
             Member since:{' '}

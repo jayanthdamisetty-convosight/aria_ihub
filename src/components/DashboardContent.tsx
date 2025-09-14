@@ -20,7 +20,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       <ProfileHeader profile={profile} />
       <GoalContribution goals={profile.annualGoals} onGoalClick={onGoalClick} />
       <ActivityHeatmap activityData={profile.activityData} />
-      <AnalyticsDashboard queryTypes={profile.queryTypes} categoryExpertise={profile.categoryExpertise} usagePatterns={profile.usagePatterns} />
+      <AnalyticsDashboard queryTypes={profile.queryTypes} categoryExpertise={profile.categoryExpertise} />
       <Achievements achievements={profile.achievements} />
       <div className="mt-8 mb-12 flex justify-center">
         <ShareButton profile={profile} />

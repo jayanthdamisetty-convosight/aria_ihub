@@ -1,19 +1,30 @@
 import React, { useState } from 'react';
-import { QueryType, CategoryExpertise, UsagePattern } from '../utils/mockData';
+import { QueryType, CategoryExpertise } from '../utils/mockData';
 interface AnalyticsDashboardProps {
   queryTypes: QueryType[];
   categoryExpertise: CategoryExpertise[];
-  usagePatterns: UsagePattern[];
 }
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   queryTypes,
-  categoryExpertise,
-  usagePatterns
+  categoryExpertise
 }) => {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   
   // Calculate total queries for percentages
   const totalQueries = queryTypes.reduce((sum, type) => sum + type.count, 0);
+  
+  // Calculate hours saved with better baseline logic
+  // Baseline: Traditional research takes 2.5 hours per query on average
+  // ARIA reduces this to 15 minutes per query (0.25 hours)
+  // So each query saves 2.25 hours
+  const hoursSavedPerQuery = 2.25;
+  const totalHoursSaved = Math.round(totalQueries * hoursSavedPerQuery);
+  
+  // Calculate work days returned (8 hours per work day)
+  const workDaysReturned = Math.round(totalHoursSaved / 8);
+  
+  // Calculate work weeks returned (5 days per week)
+  const workWeeksReturned = Math.round(workDaysReturned / 5);
   return <div className="mb-10 grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Query Type Distribution */}
       <div className="bg-white rounded-xl p-8">
@@ -149,31 +160,37 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           </div>
         </div>
       </div>
-      {/* Usage Patterns */}
+      {/* Productivity Impact - New section replacing peak usage times */}
       <div className="bg-white rounded-xl p-8 md:col-span-2">
-        <h2 className="text-xl font-light mb-6">Peak Activity Times</h2>
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
-          {usagePatterns.map(day => {
-          // Calculate bar height percentage (max 100%)
-          const heightPercentage = day.activityLevel / 10 * 100;
-          return <div key={day.day} className="flex flex-col">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-700">{day.day}</span>
-                  <span className="text-xs text-gray-500">
-                    {day.activityLevel}/10
-                  </span>
-                </div>
-                <div className="h-24 bg-gray-50 rounded-md relative mb-2">
-                  <div className="absolute bottom-0 left-0 right-0 transition-all duration-500 ease-out" style={{
-                height: `${heightPercentage}%`,
-                backgroundColor: day.color
-              }} />
-                </div>
-                {day.note && <span className="text-xs text-gray-500 truncate" title={day.note}>
-                    {day.note}
-                  </span>}
-              </div>;
-        })}
+        <h2 className="text-xl font-light mb-6">Your Productivity Impact</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="text-center">
+            <div className="text-3xl font-light text-gray-900 mb-2">
+              {totalHoursSaved.toLocaleString()}
+            </div>
+            <div className="text-sm text-gray-500 mb-1">Hours Saved</div>
+            <div className="text-xs text-gray-400">
+              Based on 2.25h saved per query vs traditional research
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-light text-gray-900 mb-2">
+              {workDaysReturned}
+            </div>
+            <div className="text-sm text-gray-500 mb-1">Work Days Returned</div>
+            <div className="text-xs text-gray-400">
+              Equivalent to {workWeeksReturned} work weeks
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-light text-gray-900 mb-2">
+              {totalQueries.toLocaleString()}
+            </div>
+            <div className="text-sm text-gray-500 mb-1">Total Queries</div>
+            <div className="text-xs text-gray-400">
+              Research queries completed
+            </div>
+          </div>
         </div>
       </div>
     </div>;
