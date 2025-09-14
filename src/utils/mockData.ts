@@ -77,6 +77,28 @@ export interface BookmarkedInsight {
   impact: 'high' | 'medium' | 'low';
   tags: string[];
 }
+
+// Core Insights types
+export interface CoreInsight {
+  id: string;
+  query: string;
+  highlightedText: string;
+  fullContext: string;
+  date: string;
+  reason: 'campaign' | 'strategy' | 'trend' | 'product' | 'follow-up' | 'general';
+  impact: 'high' | 'medium' | 'low';
+  tags: string[];
+}
+
+export interface InsightFolder {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  insights: CoreInsight[];
+  lastUpdated: string;
+  totalInsights: number;
+}
 // Leaderboard types
 export interface LeaderboardUser {
   rank: number;
@@ -972,3 +994,107 @@ export const mockLeaderboardData = {
     }]
   }
 };
+
+// Mock core insights data
+export const mockCoreInsights: InsightFolder[] = [
+  {
+    id: 'campaign-insights',
+    name: 'Campaign Insights',
+    icon: '🎯',
+    color: '#3B82F6',
+    lastUpdated: '2024-03-15',
+    totalInsights: 5,
+    insights: [
+      {
+        id: 'gen-z-engagement',
+        query: 'How do Gen Z consumers respond to influencer partnerships?',
+        highlightedText: 'Gen Z shows 3x higher engagement rates with micro-influencers (10K-100K followers) compared to mega-influencers. They value relatability over celebrity status.',
+        fullContext: 'Based on recent social media analytics, Gen Z consumers demonstrate significantly different engagement patterns compared to older demographics. Our research shows that Gen Z shows 3x higher engagement rates with micro-influencers (10K-100K followers) compared to mega-influencers. They value relatability over celebrity status, preferring authentic content creators who share their values and experiences. This trend has been consistent across platforms like TikTok, Instagram, and YouTube.',
+        date: '2024-03-15',
+        reason: 'campaign',
+        impact: 'high',
+        tags: ['gen-z', 'influencers', 'engagement']
+      },
+      {
+        id: 'sustainability-messaging',
+        query: 'What messaging resonates with Gen Z for sustainable beauty products?',
+        highlightedText: 'Gen Z responds best to transparent messaging about ingredient sourcing and environmental impact. 67% are willing to pay premium for genuinely sustainable products.',
+        fullContext: 'Sustainability messaging for Gen Z requires a different approach than traditional marketing. Our analysis reveals that Gen Z responds best to transparent messaging about ingredient sourcing and environmental impact. 67% are willing to pay premium for genuinely sustainable products, but they demand authenticity and proof of claims. Greenwashing is quickly called out and can damage brand reputation significantly.',
+        date: '2024-03-12',
+        reason: 'campaign',
+        impact: 'high',
+        tags: ['sustainability', 'gen-z', 'messaging']
+      },
+      {
+        id: 'tiktok-trends',
+        query: 'What are the latest Gen Z social media trends for beauty brands?',
+        highlightedText: 'TikTok remains the dominant platform, with 78% of Gen Z users discovering new beauty products through short-form video content.',
+        fullContext: 'Social media trends for beauty brands continue to evolve rapidly. TikTok remains the dominant platform, with 78% of Gen Z users discovering new beauty products through short-form video content. The platform\'s algorithm favors authentic, unfiltered content over polished advertisements. Brands that successfully engage Gen Z focus on user-generated content, challenges, and educational content rather than traditional product showcases.',
+        date: '2024-03-10',
+        reason: 'campaign',
+        impact: 'medium',
+        tags: ['tiktok', 'social-media', 'gen-z']
+      }
+    ]
+  },
+  {
+    id: 'competitor-intel',
+    name: 'Competitor Intel',
+    icon: '🔍',
+    color: '#EF4444',
+    lastUpdated: '2024-03-14',
+    totalInsights: 3,
+    insights: [
+      {
+        id: 'competitor-launch-strategy',
+        query: 'How are competitors launching new products in Q1 2024?',
+        highlightedText: 'Major competitors are focusing on limited-edition collaborations and seasonal launches. The average time-to-market has decreased by 30% due to streamlined development processes.',
+        fullContext: 'Competitive analysis reveals significant shifts in product launch strategies. Major competitors are focusing on limited-edition collaborations and seasonal launches. The average time-to-market has decreased by 30% due to streamlined development processes. This acceleration is driven by consumer demand for novelty and social media\'s fast-paced content cycle. Brands are investing heavily in rapid prototyping and agile development methodologies.',
+        date: '2024-03-14',
+        reason: 'strategy',
+        impact: 'high',
+        tags: ['competitors', 'launch-strategy', 'time-to-market']
+      },
+      {
+        id: 'pricing-strategies',
+        query: 'What pricing strategies are competitors using for premium beauty products?',
+        highlightedText: 'Competitors are implementing dynamic pricing with seasonal adjustments and loyalty program integration, showing 15% higher retention rates.',
+        fullContext: 'Pricing strategies in the premium beauty sector have evolved significantly. Competitors are implementing dynamic pricing with seasonal adjustments and loyalty program integration, showing 15% higher retention rates. The approach combines psychological pricing with data-driven personalization, creating perceived value while maximizing revenue per customer.',
+        date: '2024-03-11',
+        reason: 'strategy',
+        impact: 'medium',
+        tags: ['pricing', 'retention', 'loyalty']
+      }
+    ]
+  },
+  {
+    id: 'trend-analysis',
+    name: 'Trend Analysis',
+    icon: '📈',
+    color: '#10B981',
+    lastUpdated: '2024-03-16',
+    totalInsights: 4,
+    insights: [
+      {
+        id: 'blue-light-skincare',
+        query: 'What are emerging product categories in the beauty industry?',
+        highlightedText: 'Blue light protection skincare and microbiome-friendly products are showing 45% year-over-year growth. These categories align with post-pandemic wellness trends.',
+        fullContext: 'The beauty industry continues to evolve with new product categories emerging rapidly. Blue light protection skincare and microbiome-friendly products are showing 45% year-over-year growth. These categories align with post-pandemic wellness trends, as consumers prioritize health-conscious beauty choices. The growth is driven by increased screen time, awareness of digital aging, and scientific advances in microbiome research.',
+        date: '2024-03-16',
+        reason: 'trend',
+        impact: 'high',
+        tags: ['blue-light', 'microbiome', 'wellness']
+      },
+      {
+        id: 'men-grooming-growth',
+        query: 'What untapped markets exist for premium beauty products?',
+        highlightedText: 'The men\'s grooming market in Southeast Asia shows 34% growth potential. Premium men\'s skincare is particularly underserved in Thailand and Vietnam.',
+        fullContext: 'Market analysis reveals significant untapped opportunities in the men\'s grooming sector. The men\'s grooming market in Southeast Asia shows 34% growth potential. Premium men\'s skincare is particularly underserved in Thailand and Vietnam, where cultural attitudes toward male grooming are rapidly evolving. This represents a $2.3B opportunity over the next three years.',
+        date: '2024-03-13',
+        reason: 'trend',
+        impact: 'high',
+        tags: ['men-grooming', 'southeast-asia', 'premium']
+      }
+    ]
+  }
+];

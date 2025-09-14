@@ -1,11 +1,12 @@
 import React from 'react';
 import ProfileHeader from './ProfileHeader';
 import GoalContribution from './GoalContribution';
+import CoreInsights from './CoreInsights';
 import ActivityHeatmap from './ActivityHeatmap';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import Achievements from './Achievements';
 import ShareButton from './ShareButton';
-import { UserProfile, AnnualGoal } from '../utils/mockData';
+import { UserProfile, AnnualGoal, mockCoreInsights } from '../utils/mockData';
 
 interface DashboardContentProps {
   profile: UserProfile;
@@ -19,6 +20,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   return <>
       <ProfileHeader profile={profile} />
       <GoalContribution goals={profile.annualGoals} onGoalClick={onGoalClick} />
+      <CoreInsights folders={mockCoreInsights} />
       <ActivityHeatmap activityData={profile.activityData} />
       <AnalyticsDashboard queryTypes={profile.queryTypes} categoryExpertise={profile.categoryExpertise} />
       <Achievements achievements={profile.achievements} />
